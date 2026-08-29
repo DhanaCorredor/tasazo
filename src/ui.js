@@ -22,6 +22,8 @@ const byId = (id) => document.getElementById(id);
 export const elements = {
   amount: byId('amountInput'),
   merchantRate: byId('merchantRateInput'),
+  priceUsd: byId('priceUsdInput'),
+  impliedNote: byId('impliedNote'),
   officialRate: byId('officialRateInput'),
   officialEuro: byId('officialEuroInput'),
   parallelRate: byId('parallelRateInput'),
@@ -336,6 +338,37 @@ export function setRateValue(input, text, { flash = false } = {}) {
   input.classList.remove('just-updated');
   void input.offsetWidth; // restart the animation
   input.classList.add('just-updated');
+}
+
+/**
+ * Shows the rate worked out from a price quoted in dollars.
+ *
+ * The value lands in the merchant rate field itself rather than beside it, so
+ * the rest of the app — gauge, verdict, comparison cards — keeps reading the
+ * one field it always read.
+ *
+ * @param {number|null} rate null when there is nothing to derive from
+ */
+export function setImpliedRate(rate, { hasPrice = false } = {}) {
+  const isDerived = rate !== null;
+  elements.merchantRate.classList.toggle('is-derived', isDerived);
+
+  if (isDerived) {
+    // No flash: this recomputes on every keystroke of the amount, and a field
+    // pulsing under the finger reads as an error rather than an update.
+    setRateValue(elements.merchantRate, formatRate(rate));
+    elements.impliedNote.innerHTML = strings.merchant.implied(formatRate(rate));
+    return;
+  }
+
+  /*
+   * While a price is on screen the derivation owns the rate field. Losing the
+   * figure it needs — an unreadable price, an amount that was cleared — has to
+   * empty that field too, or a rate derived a keystroke ago would go on
+   * driving the verdict as if it were still true.
+   */
+  if (hasPrice) setRateValue(elements.merchantRate, '');
+  elements.impliedNote.textContent = strings.merchant.impliedHint;
 }
 
 export function setRateMode(reference, isAuto) {

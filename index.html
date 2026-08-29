@@ -80,10 +80,26 @@
     <details class="disclosure" id="merchantDisclosure">
       <summary class="disclosure-summary">
         <span class="disclosure-icon" aria-hidden="true">▸</span>
-        ¿Te cobran a otra tasa?
+        <span class="disclosure-text">
+          ¿Te cobran a otra tasa?
+          <small>Mira cuánto sobreprecio te están metiendo</small>
+        </span>
       </summary>
 
       <div class="disclosure-body">
+        <div class="field">
+          <label class="field-label" for="priceUsdInput">
+            <span class="field-name">Precio en dólares</span>
+            <span class="chip chip-merchant">Si no sabes su tasa</span>
+          </label>
+          <div class="input-shell">
+            <span class="input-prefix" aria-hidden="true">$</span>
+            <input type="text" id="priceUsdInput" class="input" inputmode="decimal"
+                   placeholder="0,00" autocomplete="off">
+          </div>
+          <p class="note" id="impliedNote">Escribe lo que te dicen que cuesta en dólares y saco la tasa que te están aplicando.</p>
+        </div>
+
         <div class="field">
           <label class="field-label" for="merchantRateInput">
             <span class="field-name">Tasa del comercio</span>

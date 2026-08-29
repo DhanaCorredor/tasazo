@@ -347,6 +347,22 @@ body::after {
   outline-offset: -2px;
 }
 
+.disclosure-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.disclosure-text small {
+  color: var(--text-faint);
+  font-size: 0.74rem;
+  font-weight: 400;
+}
+
+.disclosure-summary:hover .disclosure-text small {
+  color: var(--text-muted);
+}
+
 .disclosure-icon {
   color: var(--merchant);
   font-size: 0.8rem;
@@ -570,6 +586,12 @@ body::after {
 .input.is-auto {
   border-color: color-mix(in srgb, var(--official) 30%, transparent);
   background: color-mix(in srgb, var(--official) 6%, transparent);
+}
+
+/* Worked out from a price, not typed: flagged like an automatic rate is. */
+.input.is-derived {
+  border-color: color-mix(in srgb, var(--merchant) 45%, transparent);
+  background: color-mix(in srgb, var(--merchant) 7%, transparent);
 }
 
 .input.is-invalid {

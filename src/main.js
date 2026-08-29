@@ -8,6 +8,7 @@ import {
   crossRate,
   difference,
   findVerdict,
+  impliedRate,
   overchargePercent,
   selectReading,
   toEuroRate,
@@ -27,6 +28,7 @@ import {
   renderGauge,
   renderResults,
   renderStatus,
+  setImpliedRate,
   setRateMode,
   setRateValue,
   setReferenceMode,
@@ -58,6 +60,7 @@ function savePreferences() {
     autoRefresh: elements.autoRefreshToggle.checked,
     amount: elements.amount.value,
     merchantRate: elements.merchantRate.value,
+    priceUsd: elements.priceUsd.value,
     // Automatic rates come back from the feed, so only manual ones are kept.
     rates: {
       official: state.autoRates.official ? null : readRateGroup('official'),
@@ -87,6 +90,7 @@ function restorePreferences() {
   elements.autoRefreshToggle.checked = saved.autoRefresh !== false;
   elements.amount.value = saved.amount ?? '';
   elements.merchantRate.value = saved.merchantRate ?? '';
+  elements.priceUsd.value = saved.priceUsd ?? '';
 
   for (const reference of Object.keys(rateFields)) {
     const group = saved.rates?.[reference];
@@ -103,7 +107,8 @@ function restorePreferences() {
  * typed last time is exactly the thing they expect to find again (UI-9).
  */
 function revealGroupsHoldingState() {
-  elements.merchantDisclosure.open = elements.merchantRate.value.trim() !== '';
+  elements.merchantDisclosure.open =
+    elements.merchantRate.value.trim() !== '' || elements.priceUsd.value.trim() !== '';
   elements.ratesDisclosure.open = !state.autoRates.official || !state.autoRates.parallel;
 }
 
@@ -169,6 +174,7 @@ function scheduleAutoRefresh() {
 /** Reads the form, recalculates everything and repaints. Cheap enough to run on every keystroke. */
 function update() {
   const amount = readField(elements.amount);
+  deriveMerchantRate(amount);
   const merchantRate = readField(elements.merchantRate);
 
   const rates = {
@@ -218,6 +224,20 @@ function update() {
   });
 }
 
+/**
+ * Fills the merchant's rate from a price quoted in dollars.
+ *
+ * At a till the rate is the one figure nobody states out loud, so asking for
+ * it first is asking for what the customer does not have. The price they were
+ * quoted and the bolívares on the screen are between them the same number.
+ */
+function deriveMerchantRate(amount) {
+  const price = readField(elements.priceUsd);
+  setImpliedRate(impliedRate(amount, price), {
+    hasPrice: elements.priceUsd.value.trim() !== '',
+  });
+}
+
 /** Parses a field and flags it when the text is there but unreadable. */
 function readField(input) {
   const value = parseAmount(input.value);
@@ -258,6 +278,8 @@ function clearEverything() {
   elements.amount.value = '';
   elements.merchantRate.value = '';
   elements.merchantRate.classList.remove('is-invalid');
+  elements.priceUsd.value = '';
+  elements.priceUsd.classList.remove('is-invalid');
   toggleRateMode('official', true);
   toggleRateMode('parallel', true);
   state.referenceMode = REFERENCE_MODES.official;
@@ -273,12 +295,21 @@ function clearEverything() {
 }
 
 function bindEvents() {
-  for (const input of [elements.amount, elements.merchantRate]) {
+  for (const input of [elements.amount, elements.priceUsd]) {
     input.addEventListener('input', () => {
       update();
       savePreferences();
     });
   }
+
+  // Typing the rate by hand is how you overrule a rate derived from a price,
+  // mirroring how typing over an automatic reference rate takes it manual.
+  elements.merchantRate.addEventListener('input', () => {
+    elements.priceUsd.value = '';
+    elements.priceUsd.classList.remove('is-invalid');
+    update();
+    savePreferences();
+  });
 
   for (const [reference, fields] of Object.entries(rateFields)) {
     for (const input of Object.values(fields)) {
