@@ -1204,6 +1204,45 @@ body::after {
   font-weight: 600;
 }
 
+/*
+ * Loud enough to catch an eye that is already reading the figure it doubts,
+ * quiet enough not to read as an error: nothing here is wrong, something here
+ * is suspicious.
+ */
+.warning {
+  /*
+   * Not a flex row: flex would make the emoji, the sentence and the closing
+   * "?" three separate items and space them apart, breaking the punctuation
+   * off the word before it. Absolute icon, hanging indent, ordinary text flow.
+   */
+  position: relative;
+  margin-top: 10px;
+  padding: 9px 11px 9px 34px;
+  border: 1px solid color-mix(in srgb, var(--warn) 45%, transparent);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--warn) 9%, transparent);
+  color: var(--text);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.warning::before {
+  content: '💡';
+  position: absolute;
+  top: 9px;
+  left: 11px;
+}
+
+.warning b {
+  color: var(--warn);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.warning[hidden] {
+  display: none;
+}
+
 .colophon {
   margin-top: 26px;
   color: var(--text-faint);

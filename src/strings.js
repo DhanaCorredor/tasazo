@@ -58,6 +58,13 @@ export const strings = {
       `Te están aplicando <b>Bs. ${rate} por dólar</b>. Esa es la tasa que compara el infartómetro.`,
   },
 
+  typo: {
+    // Never an accusation and never a correction: the app cannot tell a typo
+    // from a robbery, so it says which one it suspects and stops there.
+    warning: (suggestion) =>
+      `Esa tasa está lejísimos de las referencias. ¿Querías escribir <b>${suggestion}</b>?`,
+  },
+
   rateLabels: {
     merchant: 'A la tasa del comercio',
     official: 'A tasa BCV',

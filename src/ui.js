@@ -24,6 +24,7 @@ export const elements = {
   merchantRate: byId('merchantRateInput'),
   priceUsd: byId('priceUsdInput'),
   impliedNote: byId('impliedNote'),
+  typoWarning: byId('typoWarning'),
   officialRate: byId('officialRateInput'),
   officialEuro: byId('officialEuroInput'),
   parallelRate: byId('parallelRateInput'),
@@ -268,6 +269,21 @@ export function renderComparison(reference, data) {
 
   bar.style.width = `${Math.min(100, (Math.abs(data.percent) / GAUGE_MAX_PERCENT) * 100)}%`;
   bar.dataset.tone = data.verdict.tone;
+}
+
+/**
+ * Raises the suspicion that a rate was mistyped.
+ *
+ * Nothing else on the page changes: the reading and the verdict stand as they
+ * are, because the app cannot tell a typo from a robbery (`UI-12`).
+ *
+ * @param {{suggestion: number}|null} suspicion null when the rate is plausible
+ */
+export function renderTypoWarning(suspicion) {
+  elements.typoWarning.hidden = suspicion === null;
+  if (suspicion === null) return;
+
+  elements.typoWarning.innerHTML = strings.typo.warning(formatRate(suspicion.suggestion));
 }
 
 /* ------------------------------------------------------------ Rate status */

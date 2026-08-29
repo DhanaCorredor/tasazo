@@ -9,6 +9,7 @@ import {
   impliedRate,
   overchargePercent,
   selectReading,
+  suspectTypo,
   toEuroRate,
 } from '../src/calculator.js';
 import { REFERENCE_MODES } from '../src/config.js';
@@ -101,6 +102,46 @@ describe('crossRate and toEuroRate', () => {
   it('returns null without both published rates', () => {
     assert.equal(crossRate(null, BCV_USD), null);
     assert.equal(toEuroRate(700, null), null);
+  });
+});
+
+describe('suspectTypo', () => {
+  const REFERENCES = [BCV_USD, PARALLEL_USD];
+
+  it('spots a dropped digit and names what was meant', () => {
+    const suspicion = suspectTypo(70, REFERENCES);
+
+    close(suspicion.suggestion, 700);
+    close(suspicion.reference, BCV_USD);
+  });
+
+  it('spots a doubled digit just as readily', () => {
+    close(suspectTypo(7753, REFERENCES).suggestion, 775.3);
+  });
+
+  it('leaves a harsh but believable charge alone', () => {
+    // 400 against the BCV is a 93.8 % overcharge — cruel, not impossible.
+    assert.equal(suspectTypo(400, REFERENCES), null);
+    assert.equal(suspectTypo(500, REFERENCES), null);
+    assert.equal(suspectTypo(BCV_USD, REFERENCES), null);
+  });
+
+  it('measures distance logarithmically, so both directions are equal', () => {
+    assert.notEqual(suspectTypo(BCV_USD / 10, REFERENCES), null);
+    assert.notEqual(suspectTypo(BCV_USD * 10, REFERENCES), null);
+  });
+
+  it('judges against the nearest reference, not every one', () => {
+    // A hand-typed reference that is itself wrong must not condemn a rate the
+    // other reference vouches for.
+    assert.equal(suspectTypo(700, [90, PARALLEL_USD]), null);
+  });
+
+  it('says nothing without a rate or a reference to weigh it against', () => {
+    assert.equal(suspectTypo(70, []), null);
+    assert.equal(suspectTypo(70, [null, Number.NaN]), null);
+    assert.equal(suspectTypo(null, REFERENCES), null);
+    assert.equal(suspectTypo(0, REFERENCES), null);
   });
 });
 
