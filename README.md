@@ -134,6 +134,7 @@ Things a reader might want to know without reading the diff:
 
 - **The specification is the source of truth.** [`SPEC.md`](SPEC.md) carries numbered requirements (`CALC-2`, `RATE-6`, `UI-9`…), and every commit that changes behaviour names the one it touches. It was written retroactively over a working prototype, which is what exposed the three defects listed in its §8 — lenient number parsing, a gauge with no text alternative, and reconnection ignoring the refresh switch.
 - **Colour never appears in JavaScript.** The renderer writes a *tone* — `good`, `warn`, `bad`, `critical`, `bargain` — and one block of CSS decides what a tone looks like. That is the whole reason a second theme cost nothing but variables.
+- **The light palette is opaque on purpose.** Glassmorphism needs something behind it to be worth blurring. Over a near-white page it produces panels with no edge, which is how the default theme arrived unreadable; light now draws its surfaces and borders solid, and the blur lives behind a `--surface-blur` token that only the dark palette sets.
 - **The domain layer knows nothing about the browser.** `calculator.js` and `format.js` are unaware of the DOM, the network and the clock, so they are tested in plain Node with no framework and no shim.
 - **Every gap is written down.** §8 of the specification records what is knowingly unfinished, each with a proposal. Identifiers are stable: a gap that gets closed stays listed as closed rather than being renumbered away.
 

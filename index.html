@@ -10,7 +10,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Outfit:wght@400;500;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <link rel="icon" href="logo.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="logo.svg">
@@ -102,7 +102,14 @@
             <svg class="gauge" id="gauge" viewBox="0 0 300 185" role="img"
                  aria-label="Medidor de sobreprecio sin datos suficientes">
               <defs>
-                <filter id="needleGlow">
+                <!--
+                  Measured in user space, not against the bounding box: the
+                  needle is a horizontal line, whose box is zero pixels high,
+                  and the default region would collapse with it — taking the
+                  needle off the dial at every angle.
+                -->
+                <filter id="needleGlow" filterUnits="userSpaceOnUse"
+                        x="0" y="0" width="300" height="185">
                   <feGaussianBlur stdDeviation="3.5" result="blur"/>
                   <feMerge>
                     <feMergeNode in="blur"/>

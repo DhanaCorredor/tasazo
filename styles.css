@@ -15,40 +15,44 @@
  * is written once and reads its colours from these variables.
  */
 :root {
-  --bg: #f5f6fb;
-  --surface: rgba(255, 255, 255, 0.72);
-  --border: rgba(20, 22, 42, 0.09);
-  --border-strong: rgba(20, 22, 42, 0.16);
-  --well: rgba(20, 22, 42, 0.035);
-  --wash: rgba(20, 22, 42, 0.05);
+  --bg: #eaeef6;
+  /* Opaque, not translucent: on a light ground a 72 % white panel over a near
+     white page is invisible. The glass belongs to the dark theme alone. */
+  --surface: #ffffff;
+  --surface-blur: none;
+  --border: #dde2ec;
+  --border-strong: #c3cad9;
+  --well: #f3f5fa;
+  --wash: #eef1f7;
   --glow: rgba(20, 22, 42, 0.12);
 
-  --text: #14162a;
-  --text-muted: #5c6180;
-  --text-faint: #8b90a8;
+  --text: #0f1222;
+  --text-muted: #4b5170;
+  --text-faint: #6b7191;
 
-  /* Darkened against a light ground: the neon values fail contrast on white. */
-  --merchant: #0086a8;
-  --official: #0e8f59;
-  --parallel: #b3660a;
-  --euro: #6a3fc7;
+  /* Darkened against a light ground: every value below clears 4.5:1 on white,
+     which the neon set used by the dark theme does not. */
+  --merchant: #046a86;
+  --official: #0a7346;
+  --parallel: #95530a;
+  --euro: #5b32b8;
 
-  --good: #0e8f59;
-  --warn: #9a6c07;
-  --bad: #b3660a;
-  --critical: #d10f42;
-  --bargain: #0086a8;
+  --good: #0a7346;
+  --warn: #7d5806;
+  --bad: #95530a;
+  --critical: #c00537;
+  --bargain: #046a86;
 
-  --backdrop-warm: rgba(255, 46, 99, 0.22);
-  --backdrop-cool: rgba(0, 134, 168, 0.18);
-  --grid-line: rgba(20, 22, 42, 0.05);
-  --panel-shadow: 0 18px 40px -28px rgba(20, 22, 42, 0.55);
-  --toast-bg: rgba(255, 255, 255, 0.94);
-  --needle: #14162a;
+  --backdrop-warm: rgba(192, 5, 55, 0.14);
+  --backdrop-cool: rgba(4, 106, 134, 0.12);
+  --grid-line: rgba(20, 22, 42, 0.045);
+  --panel-shadow: 0 1px 2px rgba(16, 20, 40, 0.05), 0 12px 28px -18px rgba(16, 20, 40, 0.45);
+  --toast-bg: #ffffff;
+  --needle: #0f1222;
   --needle-hub: #ffffff;
-  --input-bg: rgba(255, 255, 255, 0.9);
+  --input-bg: #ffffff;
   --input-bg-focus: #ffffff;
-  --track-bg: rgba(20, 22, 42, 0.06);
+  --track-bg: #e4e8f1;
 
   --radius-lg: 20px;
   --radius-md: 15px;
@@ -68,6 +72,7 @@
 :root[data-theme='dark'] {
   --bg: #08090a;
   --surface: rgba(255, 255, 255, 0.05);
+  --surface-blur: blur(18px) saturate(140%);
   --border: rgba(255, 255, 255, 0.1);
   --border-strong: rgba(255, 255, 255, 0.18);
   --well: rgba(0, 0, 0, 0.4);
@@ -212,8 +217,8 @@ body::after {
   border: 1px solid var(--border);
   border-radius: 50%;
   background: var(--surface);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: var(--surface-blur);
+  backdrop-filter: var(--surface-blur);
   font-size: 1.1rem;
   line-height: 1;
   transition: border-color 0.18s, transform 0.18s;
@@ -255,7 +260,7 @@ body::after {
   margin: 0 auto;
   color: var(--text-muted);
   font-size: 0.92rem;
-  font-weight: 300;
+  font-weight: 400;
   line-height: 1.5;
 }
 
@@ -270,8 +275,8 @@ body::after {
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   background: var(--surface);
-  -webkit-backdrop-filter: blur(18px) saturate(140%);
-  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: var(--surface-blur);
+  backdrop-filter: var(--surface-blur);
   box-shadow: var(--panel-shadow), inset 0 1px 0 var(--wash);
 }
 
@@ -309,8 +314,8 @@ body::after {
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   background: var(--surface);
-  -webkit-backdrop-filter: blur(18px) saturate(140%);
-  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: var(--surface-blur);
+  backdrop-filter: var(--surface-blur);
   overflow: hidden;
 }
 
@@ -796,8 +801,12 @@ body::after {
   transition: transform 0.7s cubic-bezier(0.34, 1.36, 0.5, 1);
 }
 
+/*
+ * Below the dial, not inside it. Pulled up over the arc the figure landed on
+ * the needle's hub, which reads as a rendering fault rather than a design.
+ */
 .reading {
-  margin-top: -42px;
+  margin-top: 2px;
   color: var(--text-muted);
   font-family: var(--font-mono);
   font-size: 2.8rem;
@@ -846,7 +855,7 @@ body::after {
   margin-top: 5px;
   color: var(--text-muted);
   font-size: 0.82rem;
-  font-weight: 300;
+  font-weight: 400;
   line-height: 1.5;
 }
 
@@ -929,7 +938,7 @@ body::after {
   padding: 22px 10px;
   color: var(--text-muted);
   font-size: 0.88rem;
-  font-weight: 300;
+  font-weight: 400;
   text-align: center;
 }
 
@@ -1164,7 +1173,7 @@ body::after {
   margin-top: 10px;
   color: var(--text-muted);
   font-size: 0.76rem;
-  font-weight: 300;
+  font-weight: 400;
   line-height: 1.55;
 }
 
@@ -1177,7 +1186,7 @@ body::after {
   margin-top: 26px;
   color: var(--text-faint);
   font-size: 0.74rem;
-  font-weight: 300;
+  font-weight: 400;
   line-height: 1.7;
   text-align: center;
 }
@@ -1208,8 +1217,8 @@ body::after {
   border: 1px solid var(--border-strong);
   border-radius: 13px;
   background: var(--toast-bg);
-  -webkit-backdrop-filter: blur(14px);
-  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: var(--surface-blur);
+  backdrop-filter: var(--surface-blur);
   font-size: 0.84rem;
   font-weight: 500;
   text-align: center;
