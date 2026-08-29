@@ -297,6 +297,8 @@ Identifiers here are stable: a gap that is closed stays listed as closed rather 
 
 **GAP-5 · No visual regression.** The DOM is covered by suites that boot the real application in jsdom, which catches wiring, rendering and state. What no test sees is how any of it *looks*: layout, contrast and motion are still verified by eye.
 
+This has already cost two defects, both invisible to a suite that was entirely green at the time. The light palette shipped with translucent surfaces that left every panel edgeless against the page (`UI-11`), and the gauge needle carried a glow filter whose region was measured against a bounding box — zero pixels high for a horizontal line — so the needle was absent from the dial at every angle, in every theme, from the first commit. jsdom parses the SVG and reports the needle's rotation correctly; it renders nothing, and neither defect could fail a test.
+
 **GAP-6 · Merchant euros depend on the official pair.** Every reference carries its own euro rate, but the merchant's is quoted in dollars alone, so its euro equivalent still comes from the official cross. Clearing the official euro field therefore removes the merchant's euro figure while leaving its dollar figure intact — correct, but unexplained on screen.
 
 ### Closed

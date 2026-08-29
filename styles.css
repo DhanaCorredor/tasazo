@@ -801,8 +801,12 @@ body::after {
   transition: transform 0.7s cubic-bezier(0.34, 1.36, 0.5, 1);
 }
 
+/*
+ * Below the dial, not inside it. Pulled up over the arc the figure landed on
+ * the needle's hub, which reads as a rendering fault rather than a design.
+ */
 .reading {
-  margin-top: -42px;
+  margin-top: 2px;
   color: var(--text-muted);
   font-family: var(--font-mono);
   font-size: 2.8rem;
