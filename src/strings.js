@@ -50,6 +50,14 @@ export const strings = {
     },
   },
 
+  merchant: {
+    impliedHint:
+      'Nadie canta su tasa, pero todos cantan un precio. Escribe lo que te dicen ' +
+      'que cuesta en dólares y saco la tasa que te están aplicando.',
+    implied: (rate) =>
+      `Te están aplicando <b>Bs. ${rate} por dólar</b>. Esa es la tasa que compara el infartómetro.`,
+  },
+
   rateLabels: {
     merchant: 'A la tasa del comercio',
     official: 'A tasa BCV',

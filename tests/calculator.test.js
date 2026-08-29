@@ -6,6 +6,7 @@ import {
   crossRate,
   difference,
   findVerdict,
+  impliedRate,
   overchargePercent,
   selectReading,
   toEuroRate,
@@ -35,6 +36,26 @@ describe('convert', () => {
     assert.equal(convert(10_000, 0), null);
     assert.equal(convert(0, 700), null);
     assert.equal(convert(10_000, Number.NaN), null);
+  });
+});
+
+describe('impliedRate', () => {
+  it('recovers the rate from the price quoted and the bolivares charged', () => {
+    // 14.000 Bs for something priced at 20 $ is 700 Bs/$.
+    close(impliedRate(14_000, 20), 700);
+    close(impliedRate(10_000, 12.897641), BCV_USD);
+  });
+
+  it('is the inverse of a conversion', () => {
+    close(impliedRate(10_000, convert(10_000, 823.5)), 823.5);
+  });
+
+  it('refuses to produce a rate from missing or invalid input', () => {
+    assert.equal(impliedRate(null, 20), null);
+    assert.equal(impliedRate(14_000, null), null);
+    assert.equal(impliedRate(14_000, 0), null);
+    assert.equal(impliedRate(0, 20), null);
+    assert.equal(impliedRate(14_000, Number.NaN), null);
   });
 });
 

@@ -92,6 +92,14 @@ derived Bs/€   = Bs/$ rate × cross
 euros          = amount ÷ Bs/€
 ```
 
+**CALC-7 · Implied merchant rate.** A till states a price, never a rate. Where the price is quoted in dollars, the rate being applied falls out of the two figures the customer already has:
+
+```text
+merchant Bs/$ = amount ÷ price in dollars
+```
+
+The result is written into the merchant rate field itself, so everything downstream — gauge, verdict, comparison cards — keeps reading the single field it always read. While a price is present the derivation **owns** that field: losing the figures it needs empties the rate rather than leaving a stale one to go on driving the verdict. Typing directly into the rate discards the price and returns the field to the user, mirroring how typing over an automatic reference takes it manual (`AC-8`).
+
 **CALC-5 · Precision.** Calculations run in floating point with no intermediate rounding. Rounding happens only on display (`UI-6`).
 
 **CALC-6 · Insufficient data.** A result depending on a missing, zero or unreadable value is omitted, never shown as zero. An amount without a merchant rate produces no rows; a merchant rate without any reference produces no gauge reading.
@@ -179,10 +187,10 @@ The humour is functional rather than decorative: a percentage gets read, a verdi
 
 | Group | Contains |
 |---|---|
-| *¿Te cobran a otra tasa?* | merchant rate, gauge, verdict, comparison cards, reference selector |
+| *¿Te cobran a otra tasa?* | price in dollars, merchant rate, gauge, verdict, comparison cards, reference selector |
 | *Ajustar las tasas a mano* | the reference rate fields and their auto/manual toggles |
 
-Both are ordinary disclosure elements, so they work without JavaScript, are keyboard operable and are searchable by the browser's find-in-page. A group reopens on load when it holds a value the user left behind — a merchant rate typed earlier reopens its group, so restored state is never hidden from the person who entered it.
+Both are ordinary disclosure elements, so they work without JavaScript, are keyboard operable and are searchable by the browser's find-in-page. A group reopens on load when it holds a value the user left behind — a merchant rate or a quoted price typed earlier reopens its group, so restored state is never hidden from the person who entered it.
 
 Collapsed content is still rendered and kept current; disclosure governs visibility, never correctness.
 
@@ -202,11 +210,11 @@ Colour is never named in JavaScript. The gauge bands and every verdict carry a *
 
 ## 6. Persistence
 
-**STORE-1 · What is kept.** Amount, merchant rate, reference rates *only while manual*, gauge reference and both switches.
+**STORE-1 · What is kept.** Amount, quoted price, merchant rate, reference rates *only while manual*, gauge reference and both switches.
 
 **STORE-2 · User control.** Persistence can be switched off; doing so erases what was already stored.
 
-**STORE-3 · Clear data.** Empties the amount and merchant rate, returns both references to auto and repopulates them. It does **not** clear the rate cache: that is public data from the source, not the user's.
+**STORE-3 · Clear data.** Empties the amount, the quoted price and the merchant rate, returns both references to auto and repopulates them. It does **not** clear the rate cache: that is public data from the source, not the user's.
 
 **STORE-4 · Storage unavailable.** Where the browser blocks local storage, the app works normally for the session and reports no error.
 
@@ -271,6 +279,14 @@ then it returns to auto, repopulates from the live source and stops being persis
 Given a previous successful fetch and no network,
 the cached rates are shown on load, the state turns amber past 45 minutes,
 and every calculation keeps working.
+
+**AC-13 · A rate nobody stated.**
+Given an amount of `14,000` Bs and a price quoted as `20 $`,
+then the merchant rate reads `700.00`, marked as derived rather than typed,
+and the gauge reads against it exactly as if it had been typed.
+Retyping the amount as `15,000` moves the rate to `750.00`;
+making the price unreadable empties the rate;
+typing into the rate clears the price and hands the field back.
 
 **AC-11 · Ambiguous input.**
 `1.234,56` and `1,234.56` are both read as `1234.56`.

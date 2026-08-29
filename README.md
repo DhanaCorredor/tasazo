@@ -19,7 +19,7 @@
   <a href="https://github.com/DhanaCorredor/tasazo/actions/workflows/ci.yml">
     <img src="https://github.com/DhanaCorredor/tasazo/actions/workflows/ci.yml/badge.svg" alt="CI status">
   </a>
-  <img src="https://img.shields.io/badge/tests-73-brightgreen" alt="73 tests">
+  <img src="https://img.shields.io/badge/tests-84-brightgreen" alt="84 tests">
   <img src="https://img.shields.io/badge/dependencies-0%20runtime-brightgreen" alt="No runtime dependencies">
   <img src="https://img.shields.io/badge/licence-MIT-blue" alt="MIT licence">
 </p>
@@ -57,6 +57,7 @@ Tasazo answers it in one step. Type the bolívar amount and read it in dollars a
 ## Features
 
 - **One input.** Type the amount; both conversions appear in both currencies as you type.
+- **Works out the shop's rate for you.** Nobody at a till announces a Bs/$ rate. Give the price they quoted in dollars and the rate they are applying falls out of it.
 - **Rates that fetch themselves.** Official and parallel rates load on open and refresh every ten minutes, on tab focus and on regaining connectivity.
 - **Works offline.** The last successful snapshot is cached and clearly flagged once stale.
 - **Progressive disclosure.** Two collapsed groups hold everything beyond the basic question: comparing against a shop's own rate, and editing rates by hand.
@@ -67,7 +68,9 @@ Tasazo answers it in one step. Type the bolívar amount and read it in dollars a
 
 ## The optional half: is this shop overcharging?
 
-Shops apply their own rate, and a rate *below* the reference means you hand over more currency for the same goods. Open *"¿Te cobran a otra tasa?"*, type the rate you are being charged, and the **Infartómetro** maps the gap onto an alarm level — from *"todo legal, respira"* to *"código azul"*.
+Shops apply their own rate, and a rate *below* the reference means you hand over more currency for the same goods. Open *"¿Te cobran a otra tasa?"* and the **Infartómetro** maps the gap onto an alarm level — from *"todo legal, respira"* to *"código azul"*.
+
+You are rarely told a rate, though. You are told a price. So the group asks for the figure you actually have — *"cuesta 20 $"* — and works the rate out against the bolívares on screen: 14.000 Bs for a 20 $ item is 700 Bs/$, which against a BCV of 775,34 is a 10,8 % overcharge. The derived rate lands in the rate field itself, so everything below it reads exactly as if you had typed it. If you do know the rate, type it and the price steps aside.
 
 It stays collapsed because it is not why most people open the app.
 
@@ -117,10 +120,11 @@ tests/
     conversion.test.js
     overcharge.test.js
     cold-start.test.js
+    implied-rate.test.js
     restored-state.test.js
 ```
 
-The dependency flow runs one way: `main` orchestrates, `ui` only draws, `calculator` and `format` know nothing about the DOM, the network or the clock. That is what makes the unit tests possible with no test framework at all. The DOM suites sit on top, booting the real `main.js` against the real `index.html` so the wiring is covered too — 73 tests in all.
+The dependency flow runs one way: `main` orchestrates, `ui` only draws, `calculator` and `format` know nothing about the DOM, the network or the clock. That is what makes the unit tests possible with no test framework at all. The DOM suites sit on top, booting the real `main.js` against the real `index.html` so the wiring is covered too — 84 tests in all.
 
 ### Where the rates come from
 
@@ -160,7 +164,7 @@ Then open the address it prints.
 ### Tests
 
 ```bash
-pnpm test            # node --test — 73 tests, no test framework
+pnpm test            # node --test — 84 tests, no test framework
 pnpm test:watch
 ```
 

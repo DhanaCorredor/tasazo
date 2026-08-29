@@ -48,6 +48,19 @@ export function toEuroRate(dollarRate, cross) {
 }
 
 /**
+ * The rate a merchant is actually applying, recovered from the two figures a
+ * customer is given at the till: the price quoted in foreign currency and the
+ * bolívares charged for it.
+ *
+ * Nobody announces their Bs/$ rate, but everyone quotes a price, so this is
+ * usually the only way to get at the number the comparison needs.
+ */
+export function impliedRate(amount, foreignPrice) {
+  if (!isPositive(amount) || !isPositive(foreignPrice)) return null;
+  return amount / foreignPrice;
+}
+
+/**
  * The excess the customer pays relative to a reference rate.
  *
  * Positive means the merchant charges more than the reference; negative means
