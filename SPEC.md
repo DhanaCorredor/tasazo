@@ -192,6 +192,10 @@ The dark palette is neutral black. Colour in the background - a tinted ground, c
 
 A stored choice is applied before the first paint, so no load shows a frame of the wrong palette.
 
+**UI-11 · Legibility of the light palette.** Light is the default (`UI-10`), so it is the palette that has to hold up, and translucency is what breaks it: a 72 %-white panel over a near-white page has no edge to see. On light, surfaces are **opaque**, borders are drawn rather than implied, and the glass — backdrop blur, inset highlights — belongs to the dark palette alone, carried by a single `--surface-blur` token that resolves to `none`.
+
+Every foreground token clears **4.5:1** against the surface it sits on, accents included, and no body copy is set below weight 400: a hairline weight in a muted grey is unreadable on white whatever its contrast figure says.
+
 Colour is never named in JavaScript. The gauge bands and every verdict carry a *tone* — `good`, `warn`, `bad`, `critical`, `bargain` — and the stylesheet decides what a tone looks like in each palette. Accent colours are darkened for the light palette, where the neon values fail contrast against white.
 
 ---
