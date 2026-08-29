@@ -33,21 +33,6 @@
 
 ---
 
-<!--
-  Screenshots go here. Drop two PNGs about 800px wide into docs/ — the light
-  theme showing a conversion, and the dark theme with the Infartómetro open —
-  then delete the comment markers around the block below.
-
-## What it looks like
-
-<p align="center">
-  <img src="docs/screenshot-light.png" width="800" alt="Tasazo converting a bolívar amount into dollars and euros">
-  <img src="docs/screenshot-dark.png" width="800" alt="The Infartómetro showing an overcharge against the official rate">
-</p>
-
----
--->
-
 ## The problem
 
 Venezuelan prices are quoted in foreign currency but charged in bolívares, so the same question comes up several times a day: *how much is this actually worth?*
