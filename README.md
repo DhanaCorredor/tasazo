@@ -19,7 +19,7 @@
   <a href="https://github.com/DhanaCorredor/tasazo/actions/workflows/ci.yml">
     <img src="https://github.com/DhanaCorredor/tasazo/actions/workflows/ci.yml/badge.svg" alt="CI status">
   </a>
-  <img src="https://img.shields.io/badge/tests-84-brightgreen" alt="84 tests">
+  <img src="https://img.shields.io/badge/tests-96-brightgreen" alt="96 tests">
   <img src="https://img.shields.io/badge/dependencies-0%20runtime-brightgreen" alt="No runtime dependencies">
   <img src="https://img.shields.io/badge/licence-MIT-blue" alt="MIT licence">
 </p>
@@ -42,6 +42,7 @@ Tasazo answers it in one step. Type the bolívar amount and read it in dollars a
 ## Features
 
 - **One input.** Type the amount; both conversions appear in both currencies as you type.
+- **Catches a dropped digit.** A rate five times or more from every reference is likelier a slip of the thumb than a charge, so it says which figure you probably meant — and changes nothing on its own.
 - **Works out the shop's rate for you.** Nobody at a till announces a Bs/$ rate. Give the price they quoted in dollars and the rate they are applying falls out of it.
 - **Rates that fetch themselves.** Official and parallel rates load on open and refresh every ten minutes, on tab focus and on regaining connectivity.
 - **Works offline.** The last successful snapshot is cached and clearly flagged once stale.
@@ -107,9 +108,10 @@ tests/
     cold-start.test.js
     implied-rate.test.js
     restored-state.test.js
+    typo.test.js
 ```
 
-The dependency flow runs one way: `main` orchestrates, `ui` only draws, `calculator` and `format` know nothing about the DOM, the network or the clock. That is what makes the unit tests possible with no test framework at all. The DOM suites sit on top, booting the real `main.js` against the real `index.html` so the wiring is covered too — 84 tests in all.
+The dependency flow runs one way: `main` orchestrates, `ui` only draws, `calculator` and `format` know nothing about the DOM, the network or the clock. That is what makes the unit tests possible with no test framework at all. The DOM suites sit on top, booting the real `main.js` against the real `index.html` so the wiring is covered too — 96 tests in all.
 
 ### Where the rates come from
 
@@ -149,7 +151,7 @@ Then open the address it prints.
 ### Tests
 
 ```bash
-pnpm test            # node --test — 84 tests, no test framework
+pnpm test            # node --test — 96 tests, no test framework
 pnpm test:watch
 ```
 

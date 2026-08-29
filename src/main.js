@@ -11,6 +11,7 @@ import {
   impliedRate,
   overchargePercent,
   selectReading,
+  suspectTypo,
   toEuroRate,
 } from './calculator.js';
 import { REFERENCE_MODES, REFRESH_INTERVAL_MS, STORAGE_KEYS } from './config.js';
@@ -28,6 +29,7 @@ import {
   renderGauge,
   renderResults,
   renderStatus,
+  renderTypoWarning,
   setImpliedRate,
   setRateMode,
   setRateValue,
@@ -206,6 +208,8 @@ function update() {
       .filter(([, charge]) => charge.usd !== null)
       .map(([key, charge]) => ({ key, ...charge })),
   );
+
+  renderTypoWarning(suspectTypo(merchantRate, [rates.official.usd, rates.parallel.usd]));
 
   const percentages = {
     official: overchargePercent(merchantRate, rates.official.usd),

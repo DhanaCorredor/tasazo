@@ -12,6 +12,7 @@ import {
   BARGAIN_THRESHOLD_PERCENT,
   BARGAIN_VERDICT,
   REFERENCE_MODES,
+  TYPO_FACTOR,
   VERDICT_LEVELS,
 } from './config.js';
 
@@ -84,6 +85,42 @@ export function findVerdict(percent) {
 
   const normalized = Math.abs(percent) < 0.5 ? 0 : percent;
   return VERDICT_LEVELS.find((level) => normalized <= level.maxPercent) ?? VERDICT_LEVELS.at(-1);
+}
+
+/**
+ * Flags a merchant rate too far from every reference to be a real charge, and
+ * names the figure that was probably meant.
+ *
+ * Distance is measured logarithmically, so ten times under and ten times over
+ * count as equally far, and the correction offered is the power of ten that
+ * lands nearest the reference — which is what a dropped or doubled digit does.
+ *
+ * Both references are weighed, so one hand-typed reference that is itself
+ * wrong cannot condemn the merchant's rate on its own.
+ *
+ * @returns {{suggestion: number, reference: number}|null} null when the rate
+ *   is plausible, or when there is nothing to compare it against
+ */
+export function suspectTypo(merchantRate, referenceRates) {
+  if (!isPositive(merchantRate)) return null;
+
+  const references = referenceRates.filter(isPositive);
+  if (references.length === 0) return null;
+
+  const distance = (rate) => Math.abs(Math.log10(rate / merchantRate));
+  const nearest = references.reduce((closest, rate) =>
+    distance(rate) < distance(closest) ? rate : closest,
+  );
+
+  const ratio = nearest / merchantRate;
+  if (ratio < TYPO_FACTOR && ratio > 1 / TYPO_FACTOR) return null;
+
+  const power = Math.round(Math.log10(ratio));
+  // Beyond the threshold the ratio is never close enough to 1 for this to
+  // round to zero, but a suggestion identical to the input would be noise.
+  if (power === 0) return null;
+
+  return { suggestion: merchantRate * 10 ** power, reference: nearest };
 }
 
 /** The extra currency handed over, in the same unit as its inputs. */

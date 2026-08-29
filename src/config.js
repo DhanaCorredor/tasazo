@@ -54,6 +54,16 @@ export const GAUGE_ZONES = [
 ];
 
 /**
+ * How far a merchant rate may stray from the nearest reference before it is
+ * read as a typo rather than a charge (`CALC-8`).
+ *
+ * Deliberately far out. Merchants charge harshly, not absurdly: at a BCV of
+ * 775.3356 a rate of 400 is a 93.8 % overcharge and still a charge someone
+ * could genuinely make, while a factor of five is a dropped digit.
+ */
+export const TYPO_FACTOR = 5;
+
+/**
  * Below this percentage the merchant is charging under the reference, which
  * favours the customer rather than harming them.
  */

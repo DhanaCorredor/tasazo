@@ -100,6 +100,22 @@ merchant Bs/$ = amount ÷ price in dollars
 
 The result is written into the merchant rate field itself, so everything downstream — gauge, verdict, comparison cards — keeps reading the single field it always read. While a price is present the derivation **owns** that field: losing the figures it needs empties the rate rather than leaving a stale one to go on driving the verdict. Typing directly into the rate discards the price and returns the field to the user, mirroring how typing over an automatic reference takes it manual (`AC-8`).
 
+**CALC-8 · Implausible merchant rate.** A rate far enough from every reference is far likelier to be a slip of the thumb than a real charge, and the slip is almost always a digit: `70` for `700`.
+
+A merchant rate is *implausible* when it sits a factor of five or more away from the **nearest** reference in either direction. The nearest is chosen on a logarithmic scale, so being ten times under and ten times over count as equally far. Both references are considered, so a single hand-typed reference that is itself wrong cannot on its own condemn the merchant's.
+
+The correction offered is the power of ten that brings the rate closest to that reference:
+
+```text
+ratio      = nearest reference ÷ merchant rate
+implausible = ratio ≥ 5  or  ratio ≤ 1/5
+suggestion = merchant rate × 10 ^ round(log₁₀ ratio)
+```
+
+The threshold is deliberately far out. Real merchants charge harshly, not absurdly: a rate of `400` against a BCV of `775.3356` is a 93.8 % overcharge and stays unflagged, because it is a charge someone could genuinely make.
+
+Detection **never changes a figure and never blocks anything** (`UI-2`). The reading, the verdict and every conversion stand exactly as they would without it; the app says what it suspects and leaves the decision to the person holding the phone.
+
 **CALC-5 · Precision.** Calculations run in floating point with no intermediate rounding. Rounding happens only on display (`UI-6`).
 
 **CALC-6 · Insufficient data.** A result depending on a missing, zero or unreadable value is omitted, never shown as zero. An amount without a merchant rate produces no rows; a merchant rate without any reference produces no gauge reading.
@@ -180,6 +196,8 @@ The humour is functional rather than decorative: a percentage gets read, a verdi
 - Layout respects `env(safe-area-inset-*)` so nothing lands under a home indicator.
 - Decorative work is cheapest on the smallest screens: blur radii and animated backdrops scale up with the viewport rather than down.
 - `prefers-reduced-motion` is honoured.
+
+**UI-12 · Warning, not correction.** An implausible merchant rate (`CALC-8`) raises a warning beside the field, naming the figure that was probably meant. It is a live region, it never fills the field on the user's behalf, and it never suppresses a result: the app cannot tell a typo from a robbery, so it says which one it suspects rather than deciding.
 
 **UI-8 · Accessibility.** The gauge carries a text alternative that includes the current reading and its reference. The verdict and the status strip are live regions, so a screen reader hears results change without the user hunting for them.
 
@@ -288,6 +306,12 @@ Retyping the amount as `15,000` moves the rate to `750.00`;
 making the price unreadable empties the rate;
 typing into the rate clears the price and hands the field back.
 
+**AC-14 · A digit dropped.**
+Given a merchant rate of `70` against an official rate of `775.3356`,
+then the reading still says `1,007.6 %` and the verdict is still *"Código azul"*,
+and a warning names `700.00` as the figure probably meant.
+At `400` — a 93.8 % overcharge — no warning is raised.
+
 **AC-11 · Ambiguous input.**
 `1.234,56` and `1,234.56` are both read as `1234.56`.
 
@@ -309,8 +333,6 @@ Identifiers here are stable: a gap that is closed stays listed as closed rather 
 
 **GAP-3 · No retry after a failure.** A failed request waits the full ten-minute cycle. Backoff would cover the brief outages that are the common case.
 
-**GAP-4 · No defence against typos.** Entering `70` instead of `700` yields a thousand-percent overcharge and a catastrophic verdict, with nothing suggesting the input may be wrong.
-
 **GAP-5 · No visual regression.** The DOM is covered by suites that boot the real application in jsdom, which catches wiring, rendering and state. What no test sees is how any of it *looks*: layout, contrast and motion are still verified by eye.
 
 This has already cost two defects, both invisible to a suite that was entirely green at the time. The light palette shipped with translucent surfaces that left every panel edgeless against the page (`UI-11`), and the gauge needle carried a glow filter whose region was measured against a bounding box — zero pixels high for a horizontal line — so the needle was absent from the dial at every angle, in every theme, from the first commit. jsdom parses the SVG and reports the needle's rotation correctly; it renders nothing, and neither defect could fail a test.
@@ -318,6 +340,8 @@ This has already cost two defects, both invisible to a suite that was entirely g
 **GAP-6 · Merchant euros depend on the official pair.** Every reference carries its own euro rate, but the merchant's is quoted in dollars alone, so its euro equivalent still comes from the official cross. Clearing the official euro field therefore removes the merchant's euro figure while leaving its dollar figure intact — correct, but unexplained on screen.
 
 ### Closed
+
+**GAP-4 · No defence against typos.** ~~Entering `70` instead of `700` yields a thousand-percent overcharge and a catastrophic verdict, with nothing suggesting the input may be wrong.~~ Closed by flagging a rate a factor of five or more from every reference and naming the power of ten that was probably meant (`CALC-8`, `UI-12`). The figures themselves are left alone.
 
 **GAP-1 · No euros on a first offline run.** ~~The cross rate depended on BCV data, so a first run with no network and hand-typed rates lost the euro column.~~ Closed by giving every reference its own euro rate (`CALC-4`).
 
